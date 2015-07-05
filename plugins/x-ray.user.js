@@ -2,7 +2,7 @@
 // @id             iitc-plugin-x-ray
 // @name           IITC Plugin: X-Ray
 // @category       Portals
-// @version        1.0.0.@@DATETIMEVERSION@@
+// @version        1.0.1.@@DATETIMEVERSION@@
 // @namespace      https://github.com/jonatkins/ingress-intel-total-conversion
 // @updateURL      @@UPDATEURL@@
 // @downloadURL    @@DOWNLOADURL@@
@@ -23,9 +23,9 @@
 // use own namespace for plugin
 window.plugin.xRay = function () {};
 
-window.plugin.xRay.originalFunc = undefined;
+window.plugin.xRay.originalFunc = function(zoom) {return 0;};
 window.plugin.xRay.xRayFunc = function (zoom) {
-    return $('#xray-level').val();
+    return Math.max($('#xray-level').val(), window.plugin.xRay.originalFunc(zoom));
 };
 
 window.plugin.xRay.setup = function () {
