@@ -29,6 +29,13 @@ window.plugin.drawProjects = function() {};
 window.plugin.drawProjects.PREKEY = 'plugin-draw-tools-layer';
 window.plugin.drawProjects.projects = [];
 
+if (!String.prototype.includes) {
+    String.prototype.includes = function () {
+        'use strict';
+        return String.prototype.indexOf.apply(this, arguments) !== -1;
+    };
+}
+
 window.plugin.drawProjects.scanStorage = function() {
   // Create drawtools default localstorage if it not exist
   if(!window.localStorage[window.plugin.drawProjects.PREKEY]) {
