@@ -23,9 +23,19 @@
 // use own namespace for plugin
 window.plugin.xRay = function () {};
 
-window.plugin.xRay.originalFunc = function(zoom) {return 0;};
+window.plugin.xRay.SAFE_ZOOM_DELTA = 4;
+window.plugin.xRay.forcedZoom = null;
+
+window.plugin.xRay.originalFunc = window.getDataZoomForMapZoom;
 window.plugin.xRay.xRayFunc = function (zoom) {
-    return Math.max($('#xray-level').val(), window.plugin.xRay.originalFunc(zoom));
+    var originalZoom = window.plugin.xRay.originalFunc(zoom);
+    window.plugin.xRay.forcedZoom = parseInt($('#xray-level').val());
+
+    if (window.plugin.xRay.forcedZoom - originalZoom > window.plugin.xRay.SAFE_ZOOM_DELTA) {
+        return originalZoom;
+    } else {
+        return Math.max(window.plugin.xRay.forcedZoom, originalZoom);
+    }
 };
 
 window.plugin.xRay.setup = function () {
@@ -59,7 +69,21 @@ window.plugin.xRay.setup = function () {
         }
     });
 
-}
+    window.map.on('zoomend', function() {
+        window.plugin.xRay.zoomListener();
+    });
+    window.plugin.xRay.zoomListener();
+};
+
+window.plugin.xRay.zoomListener = function() {
+  var ctrl = $('#xray-level').closest('label');
+
+  if(window.plugin.xRay.forcedZoom - window.map.getZoom() > window.plugin.xRay.SAFE_ZOOM_DELTA) {
+    ctrl.addClass('disabled').attr('title', 'Zoom in to show those.');
+  } else {
+    ctrl.removeClass('disabled').attr('title', '');
+  }
+};
 
 var setup = plugin.xRay.setup;
 
